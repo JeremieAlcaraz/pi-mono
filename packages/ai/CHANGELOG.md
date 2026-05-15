@@ -2,6 +2,52 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added Together AI as a built-in OpenAI-compatible provider with generated model metadata and `TOGETHER_API_KEY` authentication ([#3624](https://github.com/earendil-works/pi-mono/pull/3624) by [@Nutlope](https://github.com/Nutlope)).
+
+### Fixed
+
+- Fixed GitHub Copilot model availability to ignore generic `GH_TOKEN` and `GITHUB_TOKEN` environment variables, requiring OAuth login or `COPILOT_GITHUB_TOKEN` instead ([#4485](https://github.com/earendil-works/pi/issues/4485)).
+- Fixed Bedrock proxy handling to preserve `NO_PROXY` exclusions while using HTTP(S)-only proxy agents.
+- Fixed GitHub Copilot Claude test coverage to use the current Claude Sonnet 4.6 model ID.
+- Fixed OpenAI Responses requests for models that support disabling reasoning to send `reasoning.effort: "none"` when thinking is off.
+- Fixed Inception Mercury 2 tool calling on OpenRouter by marking `off` as unsupported in `thinkingLevelMap`, so the openai-completions provider omits the reasoning param instead of defaulting to `{reasoning:{effort:"none"}}` (which puts Mercury 2 in instant mode, disabling tool calls).
+- Fixed OpenAI Codex SSE retries to honor `retry-after-ms` and `retry-after` headers before falling back to exponential backoff.
+
+## [0.74.0] - 2026-05-07
+
+## [0.73.1] - 2026-05-07
+
+### Added
+
+- Added OAuth login flow metadata so clients can present interactive provider choices during login ([#4190](https://github.com/earendil-works/pi-mono/pull/4190) by [@mitsuhiko](https://github.com/mitsuhiko)).
+
+### Fixed
+
+- Fixed OpenAI Responses reasoning text streaming for LM Studio and other compatible providers that emit `response.reasoning_text.delta` events ([#4191](https://github.com/badlogic/pi-mono/pull/4191) by [@yaanfpv](https://github.com/yaanfpv)).
+- Fixed OpenAI Codex OAuth refresh failures writing directly to stderr while the TUI is active ([#4141](https://github.com/badlogic/pi-mono/issues/4141)).
+- Fixed OpenAI-compatible chat completion streams that interleave content and tool-call deltas in the same choice.
+- Fixed the Kimi K2 P6 model alias to normalize to `kimi-for-coding` ([#4218](https://github.com/earendil-works/pi-mono/issues/4218)).
+- Fixed OpenAI Codex Responses requests to send a non-empty system prompt ([#4184](https://github.com/earendil-works/pi-mono/issues/4184)).
+
+## [0.73.0] - 2026-05-04
+
+### Breaking Changes
+
+- Switched the built-in `xiaomi` provider endpoint from Token Plan AMS (`https://token-plan-ams.xiaomimimo.com/anthropic`) to API billing (`https://api.xiaomimimo.com/anthropic`). `XIAOMI_API_KEY` now refers to the API billing key from [platform.xiaomimimo.com](https://platform.xiaomimimo.com). Users still on Token Plan must move to the appropriate `xiaomi-token-plan-*` provider and set the corresponding env var ([#4112](https://github.com/badlogic/pi-mono/pull/4112) by [@Phoen1xCode](https://github.com/Phoen1xCode)).
+
+### Added
+
+- Added Xiaomi MiMo Token Plan regional providers with per-region env vars: `xiaomi-token-plan-cn` (`XIAOMI_TOKEN_PLAN_CN_API_KEY`), `xiaomi-token-plan-ams` (`XIAOMI_TOKEN_PLAN_AMS_API_KEY`), and `xiaomi-token-plan-sgp` (`XIAOMI_TOKEN_PLAN_SGP_API_KEY`) ([#4112](https://github.com/badlogic/pi-mono/pull/4112) by [@Phoen1xCode](https://github.com/Phoen1xCode)).
+- Added `registerSessionResourceCleanup()` and `cleanupSessionResources()` so providers can register cleanup hooks for session-scoped resources.
+
+### Fixed
+
+- Fixed generated OpenAI-compatible model metadata for Qwen 3.5/3.6 and MiniMax M2.7 to match models.dev and OpenCode Go ([#4110](https://github.com/badlogic/pi-mono/pull/4110) by [@jsynowiec](https://github.com/jsynowiec)).
+- Fixed Bedrock Converse thinking effort mapping to preserve native `xhigh` for Claude Opus 4.7.
+- Fixed OpenAI Codex Responses WebSocket transport to fall back to SSE when setup fails before streaming starts, and attach transport diagnostics to the assistant message ([#4133](https://github.com/badlogic/pi-mono/issues/4133)).
+
 ## [0.72.1] - 2026-05-02
 
 ## [0.72.0] - 2026-05-01

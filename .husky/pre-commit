@@ -30,11 +30,22 @@ if [ $RUN_BROWSER_SMOKE -eq 1 ]; then
   fi
 fi
 
-# Restage files that were previously staged and may have been modified by formatting
+# Restage files that were previously staged and may have been modified by formatting.
+# During some commits Git already holds the index lock; only restage files that
+# actually changed to avoid unnecessary nested index writes.
+FILES_TO_RESTAGE=""
 for file in $STAGED_FILES; do
-  if [ -f "$file" ]; then
-    git add "$file"
+  if [ -f "$file" ] && ! git diff --quiet -- "$file"; then
+    FILES_TO_RESTAGE="$FILES_TO_RESTAGE $file"
   fi
 done
+
+if [ -n "$FILES_TO_RESTAGE" ]; then
+  if [ -e .git/index.lock ]; then
+    echo "❌ Checks modified staged files but Git index is locked. Please restage and commit again."
+    exit 1
+  fi
+  git add $FILES_TO_RESTAGE
+fi
 
 echo "✅ All pre-commit checks passed!"
